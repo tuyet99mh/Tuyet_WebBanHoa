@@ -1,0 +1,92 @@
+﻿@model IEnumerable<Anemone.Models.EF.contact>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+@section header{
+   Trang thông tin
+}
+
+@if (ViewBag.count > 0)
+{
+    foreach (var item in Model)
+    {
+        <div>
+            
+            <hr />
+            <dl class="dl-horizontal">
+                <dt>
+                    @Html.DisplayNameFor(model => model.phone)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(modelItem => item.phone)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.email)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(modelItem => item.email)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.address)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(modelItem => item.address)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.endThanks)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(modelItem => item.endThanks)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.welcome)
+                </dt>
+
+                <dd>
+                    @Html.DisplayFor(modelItem => item.welcome)
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.descrip)
+                </dt>
+
+                <dd>
+                    @Html.Raw(@item.descrip)                   
+                </dd>
+
+                <dt>
+                    @Html.DisplayNameFor(model => model.logo)
+                </dt>
+
+                <dd>
+                    <img src="~/assets/images/@item.logo.Trim()" alt="logo" class="img-fluid rounded mb-4"/>
+                   @* @Html.DisplayFor(modelItem => item.logo)*@
+                </dd>
+
+            </dl>
+        </div>
+        <p>
+            <button class="btn btn-danger"><a href="/Contact/Delete?id=@item.contactID" onclick="return confirm('Bạn có chắc chắn muốn xóa Contact?');">Xóa</a></button>
+        </p>
+    }
+}
+else
+{
+    <p> Chưa có thông tin!!! </p>
+
+    <p>
+    @Html.ActionLink("Thêm mới", "Create")
+    </p>
+}
+

@@ -1,0 +1,92 @@
+﻿@model PagedList.IPagedList<Anemone.Models.EF.user>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+
+@section header{
+    Danh sách người dùng}
+
+
+
+<p>
+    
+    @Html.ActionLink("Thêm người dùng mới", "Insert")
+</p>
+<div class="card shadow mb-4">
+
+    @using (Html.BeginForm("List", "AccAdmin", FormMethod.Post))
+    {
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <tr>
+                        <th>Loại tài khoản</th>
+                        <th>
+                            Tên tài khoản
+                        </th>
+                        <th>
+                            Email
+                        </th>
+                        <th>
+                            Số điện thoại
+                        </th>
+                        <th>
+                            Trạng thái
+                        </th>
+
+                        <th>Thao tác</th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @if (item.userTypeID == 1)
+                                {
+                                    <p>Administrator</p>
+                                }
+                                else
+                                {
+                                    <p>Khách hàng</p>
+                                }
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.userName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.phone)
+                            </td>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.status)*@
+                                @(item.status.GetValueOrDefault(false) ? "Active" : "Block")
+                            </td>
+                            <td>
+                                @Html.ActionLink("Sửa", "Edit", new { id = item.userID }) |
+                                @Html.ActionLink("Chi Tiết", "Details", new { id = item.userID }) |
+
+                                @Ajax.ActionLink("Xoá", "Delete", new { @id = item.userID }, new AjaxOptions
+                           {
+                               Confirm = "Bạn có muốn xoá bản ghi này?",
+                               OnComplete = "$('#row_" + @item.userID + "').remove()",
+                               HttpMethod = "Delete"
+                           })
+                            </td>
+                        </tr>
+                    }
+                </table>
+                <div class="text-danger">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+

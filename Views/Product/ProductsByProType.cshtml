@@ -1,0 +1,67 @@
+﻿@model PagedList.IPagedList<Anemone.Models.EF.product>
+@using PagedList.Mvc;
+@{
+    ViewBag.Title = "Danh sách các sản phẩm";
+
+    var catdao = new Anemone.Models.DAO.ProductDAO();
+    var listcat = catdao.getAllprCat();
+}
+
+<title>ViewBag.Title</title>
+
+
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="title-section text-center mb-5 col-12">
+                <h2 class="text-uppercase">@ViewBag.typeName</h2>
+            </div>
+        </div>
+        <div class="row mb-5">
+            <div class="col-md-10 order-1">
+                <div class="row mb-5">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col-lg-4 col-md-6 item-entry mb-4">
+                            <a href="@Url.Action("Detail","Product",new {id_pr=item.proID })" class="product-item md-height bg-gray d-block">
+                                <img src="~/assets/images/product/@item.image" alt="Image" class="img-fluid">
+
+                            </a>
+                            <h2 class="item-title"><a href="@Url.Action("Detail","Product",new {id_pr=item.proID })">@item.proName - @item.codePr</a></h2>
+                            <strong class="item-price">@*<del>@item.promotionPrice</del>*@@item.price.Value.ToString("N0") VND</strong>
+                        </div>
+                    }
+
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <div class="site-block-27">
+                            <ul>
+                                @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-2 order-2 mb-5 mb-md-0">
+                <div class="border p-4 rounded mb-4">
+                    <h3 class="mb-3 h6 text-uppercase text-black d-block">Danh mục sản phẩm</h3>
+                    <ul class="list-unstyled mb-0">
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var item in listcat)
+                            {
+                                <li class="mb-1"><a href="@Url.Action("ProductsByProType", "Product", new { id_cat = item.catID, page = 1 })" class="d-flex"><span>@item.name</span></a></li>
+
+                            }
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+
+</div>
+
+

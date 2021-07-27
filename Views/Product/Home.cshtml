@@ -1,0 +1,72 @@
+﻿
+@{
+    ViewBag.Title = "Trang Chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<Anemone.Models.EF.product> Top = ViewBag.Top;
+    List<Anemone.Models.EF.product> Minus = ViewBag.Minus;
+}
+<title>@ViewBag.Title</title>
+<!--6  san pham moi-->
+<!--tat ca san pham giam gia-->
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="title-section text-center mb-5 col-12">
+                <h2 class="text-uppercase">Sản phẩm mới</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 block-3">
+                <div class="nonloop-block-3 owl-carousel">
+                    @foreach (var i in Top)
+                    {
+                        <div class="item">
+                            <div class="item-entry">
+                                <a href="@Url.Action("Detail","Product",new {id_pr=i.proID })" class="product-item md-height bg-gray d-block">
+                                    <img src="~/assets/images/product/@i.image" alt="Image" class="img-fluid">
+                                </a>
+                                <h2 class="item-title"><a href="@Url.Action("Detail","Product",new {id_pr=i.proID })">@i.proName - @i.codePr</a></h2>
+                                <strong class="item-price"><del></del>  @i.price.Value.ToString("N0") VNĐ</strong>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--tat ca san pham phu kien xinh-->
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="title-section text-center mb-5 col-12">
+                <h2 class="text-uppercase">Giá Thấp</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 block-3">
+                <div class="nonloop-block-3 owl-carousel">
+                    @foreach (var i in Minus)
+                    {
+                        <div class="item">
+                            <div class="item-entry">
+                                <a href="@Url.Action("Detail","Product",new {id_pr=i.proID })" class="product-item md-height bg-gray d-block">
+                                    <img src="~/assets/images/product/@i.image" alt="Image" class="img-fluid">
+                                </a>
+                                <h2 class="item-title"><a href="#">@i.proName - @i.codePr</a></h2>
+                                <strong class="item-price"><del></del> @i.price.Value.ToString("N0") VNĐ</strong>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

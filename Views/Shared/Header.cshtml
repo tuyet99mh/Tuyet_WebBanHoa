@@ -1,0 +1,128 @@
+﻿@{
+    Anemone.Models.DAO.ContactDAO cnt = new Anemone.Models.DAO.ContactDAO();
+    var ct = cnt.ListAll().First();
+    var sessionLogin = "null";
+    if (ViewBag.IsLogin == "null")
+    {
+
+    }
+    else
+    {
+        sessionLogin = ViewBag.IsLogin;
+    }
+}
+<div class="fixed-top">
+    <div class="site-navbar bg-white py-2 ">
+        <!--search-->
+        <div class="search-wrap">
+            <div class="container">
+                <a href="#" class="search-close js-search-close"><span class="icon-close2"></span></a>
+               
+
+                @using (Html.BeginForm("Index", "Product"))
+                {
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                   
+                }
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="logo">
+                    <div class="site-logo">
+                        @Html.ActionLink(ct.name, "Home", "Product", null, new { @class = "js-logo-clone" })
+                    </div>
+                </div>
+                <div class="main-nav d-none d-lg-block">
+                    <nav class="site-navigation text-right text-md-center" role="navigation">
+                        <ul class="site-menu js-clone-nav d-none d-lg-block">
+
+                            <li class="active">
+                                <a href="@Url.Action("Home","Product")" class="header-choose">Trang Chủ</a>
+
+                            </li>
+
+                            <li class="has-children active">
+                                <a href="@Url.Action("Index", "Product", new { page = 1 })">Danh mục sản phẩm</a>
+                                <ul class="dropdown">
+                                    @{
+                                        Anemone.Models.EF.Database db = new Anemone.Models.EF.Database();
+
+                                        foreach (var itemCate in db.categories)
+                                        {
+                                            <li>
+                                                <a href="@Url.Action("ProductsByProType", "Product", new { id_cat = itemCate.catID, page = 1 })" class="header-choose"><span>@itemCate.name<b class="caret"></b></span></a>
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </li>
+                            <li class="active">
+                                <a href="#" class="header-choose">Liên hệ</a>
+
+                            </li>
+                            @* @{
+
+
+                                    foreach (var itemCate in db.categories)
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("ProductsByProType", "Product", new { id_cat = itemCate.catID, page = 1 })" class="header-choose"><span>@itemCate.name<b class="caret"></b></span></a>
+                                        </li>
+                                    }
+
+                                }*@
+                        </ul>
+                    </nav>
+                </div>
+                <div style="margin:unset">
+                    @if (sessionLogin != "null")
+                    {
+
+                        <nav class="site-navigation text-right text-md-center">
+                            <ul class="site-menu js-clone-nav d-none d-lg-block">
+                                <li class="has-children">
+                                    <a href="#">Xin chào:<span class="choose-login"></span></a>
+                                    <ul class="dropdown">
+
+                                        <li>
+                                            <a href="@Url.Action("Logout","User")"><span class="exit">Thoát</span></a>
+                                            <a href="@Url.Action("Index","Orderdetail")">Theo đõi đơn hàng của bạn</a>
+                                            <a href="@Url.Action("OrderDone","Orderdetail")">Đơn hàng đã giao</a>
+                                            <a href="@Url.Action("AllOrder","Orderdetail")">Test danh sách</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </nav>
+
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login","User")">Đăng nhập</a>
+                    }
+                </div>
+                <div class="icons ">
+                    <a href="@Url.Action("Index","Product")" name="search" class="icons-btn d-inline-block js-search-open"><span class="icon-search"></span></a>
+                   
+                    <a href="@Url.Action("Index","Cart")" class="icons-btn d-inline-block bag">
+                        <span class="icon-shopping-bag"></span>
+                        <span class="number">0</span>
+                    </a>
+                    <a href="#" class="site-menu-toggle js-menu-toggle ml-3 d-inline-block d-lg-none">
+                        <span class="icon-menu"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        var res = "@sessionLogin";
+        if (res !="null") {
+            $('.choose-login').text(res);
+            $('.exit').removeAttr("href");
+            $('.number').text('@ViewBag.Count');
+        }
+</script>

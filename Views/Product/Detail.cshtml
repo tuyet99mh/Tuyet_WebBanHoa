@@ -1,0 +1,166 @@
+﻿@model Anemone.Models.EF.product
+@using Anemone.Models
+
+@{
+    @* var catdao = new Anemone.Models.DAO.ProductDAO();
+        var listcat = catdao.getAllprCat();*@
+
+    List<Anemone.Models.EF.product> Cat = ViewBag.Cat;
+}
+
+<div class="custom-border-bottom py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+                @Html.ActionLink("Sản Phẩm", "Index", "Product")
+                <span class="mx-2 mb-0">/</span>
+                <strong class="text-black">@Model.proName</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="site-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+               @* <div class="item-entry">*@
+                <div>
+                    <img src="~/assets/images/product/@Model.image" alt="Image">
+                </div>
+                    
+
+
+                @*</div>*@
+
+                @*<div class="news">
+                    <div class="article">
+                        <div class="thumb" style="background-image: url(http://webfaver.com/thumbnail.jpg);"></div>
+                        <div class="title">Tiêu đề bản tin</div>
+                    </div>
+                </div>*@
+
+            </div>
+            <div class="col-md-6">
+                <h2 class="text-black">@Model.proName</h2>
+
+                <p><strong class="text-primary h4">@Model.price.Value.ToString("N0") VNĐ</strong></p>
+
+                <div class="mb-5">
+                    <div class="input-group mb-3" style="max-width: 120px;">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-primary js-btn-minus" type="button">&minus;</button>
+                        </div>
+                        <input type="text" class="form-control text-center input-count" value="1" placeholder="" aria-label="Example text with button addon" aria-describedby="button-addon1" id="count-detail-product">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary js-btn-plus" type="button">&plus;</button>
+                        </div>
+                    </div>
+
+                </div>
+                <p><a class="buy-now btn btn-sm height-auto px-4 py-3 btn-primary btn-add-to-cart">Add To Cart</a></p>
+
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<div class="custom-border-bottom py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0">
+
+                <strong class="text-black">MÔ TẢ</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div>
+        @Html.Raw(@Model.description)
+
+    </div>
+</div>
+
+<div class="site-section block-3 site-blocks-2">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-7 site-section-heading text-center pt-4">
+                <h2>Các Sản Phẩm Khác Cùng Loại</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 block-3">
+                <div class="nonloop-block-3 owl-carousel">
+                    @foreach (var i in Cat)
+                    {
+                        <div class="item">
+                            <div class="item-entry">
+                                <a href="@Url.Action("Detail","Product",new {id_pr=i.proID })" class="product-item md-height bg-gray d-block">
+                                    <img src="~/assets/images/product/@i.image" alt="Image" class="img-fluid">
+                                </a>
+                                <h2 class="item-title"><a href="@Url.Action("Detail","Product",new {id_pr=i.proID })">@i.proName</a></h2>
+                                <strong class="item-price"><del></del>  @i.price.Value.ToString("N0") VNĐ</strong>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.btn-add-to-cart').click(function () {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("addToCart", "Product", new {Area="" })?id=' + @Model.proID+'&count=' + $('.input-count').val(),
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                jsonpCallback: 'callback',
+                cache: false,
+                success: function (json) {
+                    if (json.res == 1) {
+                        alert("Thêm sản phẩm thành công vào giỏ hàng");
+                        getCount();
+                    }
+                    else if (json.res == -1) {
+                        alert("Thêm sản phẩm vào giỏ hàng thất bại. Lỗi hệ thống");
+                        getCount();
+                    }
+                    else if (json.res == 0) {
+                        alert("Bạn chưa đăng nhập");
+                    }
+                    else {
+                        alert("Lỗi hệ thống");
+
+                    }
+                    },
+            error: function () {
+                    alert("Lỗi Server");
+                }
+
+        });
+    });
+    function getCount() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("getCount", "Product", new {Area="" })',
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                jsonpCallback: 'callback',
+                cache: false,
+                success: function (json) {
+                    $('.number').text(json.count);
+                    },
+            error: function () {
+
+                $('.number').text(json.count);
+                }
+
+        });
+    }
+</script>

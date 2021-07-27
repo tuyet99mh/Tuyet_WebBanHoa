@@ -1,0 +1,97 @@
+﻿@model IEnumerable<Anemone.Models.EF.category>
+@using Anemone.Models.EF
+@using Anemone.Models.DAO
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    var dem = 0;
+    var sp = new ProductDAO();
+
+
+}
+
+@section header{
+    Loại sản phẩm}
+
+
+<p>
+    @Html.ActionLink("Thêm mới danh mục sản phẩm", "Insert")
+</p>
+<div class="card shadow mb-4">
+
+    @using (Html.BeginForm("Index", "AccAdmin", FormMethod.Post))
+    {
+        <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+            <div class="input-group">
+                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search fa-sm"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <tr>
+                        <th>STT</th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.name)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.status)
+                        </th>
+                        @*<th>
+                            @Html.DisplayNameFor(model => model.showHome)
+                        </th>*@
+                        <th>Thao tác</th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        var list = sp.getPr(item.catID);
+                        dem++;
+
+                        <tr>
+                            <td>@dem</td>
+                            <td>@Html.DisplayFor(modelItem => item.name)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.status)
+                            </td>
+                            @*<td>
+                                @Html.DisplayFor(modelItem => item.showHome)
+                            </td>*@
+                            @*<td><img src="@item.catePhoto" width="50" height="50" /></td>*@
+
+
+                            <td>
+
+                                <a href="@Url.Action("Edit", "Cat", new { id = item.catID })">Edit</a>|
+
+
+                                @if (list.Count() == 0)
+                                {
+                                    <a href="/Cat/Deletee?id=@item.catID" onclick="return confirm('Bạn có chắc chắn muốn xóa thể loại giày này?');">Xóa</a>
+                                }
+                                else
+                                {
+                                    <a href="/Cat/Deletee?id=@item.catID" onclick="return confirm('Bạn có chắc chắn muốn xóa thể loại giày này?');" hidden="hidden">Xóa</a>
+                                }
+
+                               @* <a onclick="return confirm('Bạn có chắc chắn muốn xoá danh mục này?')" href="@Url.Action("Delete", "Cat", new { id = item.catID })"><i class="fa fa-times fa-fw"></i></a>*@
+                            </td>
+                        </tr>
+                    }
+                </table>
+                @* <div class="text-danger">
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                    </div>*@
+            </div>
+        </div>
+    }
+</div>
+
+

@@ -1,0 +1,322 @@
+﻿@{
+
+}
+
+
+<div class="bg-light py-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 mb-0"><a href="index.html">Home</a> <span class="mx-2 mb-0">/</span> <strong class="text-black">Cart</strong></div>
+        </div>
+    </div>
+</div>
+@if (ViewBag.count > 0)
+{
+    int dem = 0;
+    <div class="site-section">
+        <div class="container">
+            <div class="row mb-5">
+                <form class="col-md-12" method="post">
+                    <div class="site-blocks-table">
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th class="product-thumbnail">Sản Phẩm</th>
+                                    <th class="product-name">Ảnh</th>
+                                    <th class="product-price">Giá</th>
+                                    <th class="product-quantity">Số lượng</th>
+                                    <th class="product-total">Tổng Tiền</th>
+                                    <th class="product-remove">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var i in ViewBag.data)
+                                {
+                                    dem++;
+                                    <tr>
+                                        <td>@dem</td>
+                                        <td class="product-name">
+                                            <a href="@Url.Action("Detail","Product",new {id_pr=i.idp })" style="color:darkorange">
+                                                <h2 class="h5 text-black" style="color:darkorange">@i.name</h2>
+                                            </a>
+                                        </td>
+                                        <td class="product-thumbnail">
+                                            <img src="~/assets/images/product/@i.imageP" alt="Image" class="img-fluid">
+                                        </td>
+                                        <td class="price-@i.idp">@i.priceP</td>
+                                        <td>
+                                            <div class="input-group mb-3" style="max-width: 120px;">
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-outline-primary" type="button" onclick="minus('@i.idp')">&minus;</button>
+                                                </div>
+                                                <input type="text" class="form-control text-center count-item-cart" value="@i.sumcount" placeholder="" id="count-@i.idp" aria-label="Example text with button addon" aria-describedby="button-addon1">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-primary" id="plus-@i.idp" type="button" onclick="plus('@i.idp')">&plus;</button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="sumprice-@i.idp">
+                                            @Convert.ToString(i.priceP * i.sumcount)
+                                        </td>
+                                        <td>
+                                            @*<button onclick="deleteproduct('@i.idp')" class="btn btn-primary height-auto btn-sm">X</button>*@
+                                            @*@Ajax.ActionLink("Xoá", "Delete", new { @id = i.idp }, new AjaxOptions
+                                               {
+                                                   Confirm = "Bạn có muốn xoá bản ghi này?",
+                                                   OnComplete = "$('#row_" + @i.idp + "').remove()",
+                                                   HttpMethod = "Delete"
+                                               })*@
+                                            <a href="@Url.Action("XoaKhoiGio",new { @SanPhamID = i.idp})" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');" class="btn btn-danger btn-sm">Xóa</a>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+
+
+                    </div>
+                </form>
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 pl-5">
+                    <div class="row justify-content-end">
+                        <div class="col-md-7">
+                            <div class="row">
+                                <div class="col-md-12 text-right border-bottom mb-5">
+                                    <h3 class="text-black h4 text-uppercase">Tổng giỏ hàng</h3>
+                                </div>
+                            </div>
+
+                         
+                            <div class="row mb-5">
+                                <div class="col-md-6">
+                                    <span class="text-black">Tổng tiền</span>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <strong class="text-black total-price"></strong>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <button class="btn btn-primary btn-lg btn-block" onclick="window.location.href='@Url.Action("Order","Cart")'">Đặt Hàng</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="container">
+        <div class="row">
+            <div class=" text-center mb-5 col-12">
+                <h2 class="text-uppercase"><i>Chưa có sản phẩm trong giỏ hàng</i></h2>
+            </div>
+            <p>
+                @Html.ActionLink("Tiếp tục mua hàng", "Index", "Product")
+            </p>
+        </div>
+    </div>
+}
+<script>
+
+    function updatePrice(id, count) {
+        var idp = '.price-' + id;
+        var price = $(idp).text();
+        //console.log(price)
+        var ids = '.sumprice-' + id;
+        var sump = parseInt(count) * parseInt(price);
+        //console.log(sump);
+        $(ids).text(sump.toString());
+    }
+    function plus(id) {
+        var idp = '#count-' + id;
+        var count = parseInt($(idp).val(), 10) + 1;
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("addToCart", "Product", new {Area="" })?id=' + id + '&count=' + count.toString(),
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                jsonpCallback: 'callback',
+                cache: false,
+                success: function (json) {
+                    if (json.res == 1) {
+                        $(idp).val(count.toString())
+                        //alert("Tăng số lượng thành công");
+                        getCount();
+                        autoGetTotal();
+                        updatePrice(id, count);
+                        
+                    }
+                    else if (json.res == -1) {
+                        alert("Tăng số lượng thất bại");
+                        $(idp).text((count - 1).toString());
+                        getCount();
+                        autoGetTotal();
+                        updatePrice(id, count);
+                    }
+
+                    else if (json.res == 0) {
+                        alert("Bạn chưa đăng nhập");
+                        autoGetTotal();
+                        updatePrice(id, count);
+                    }
+                    else {
+                        alert("Lỗi hệ thống");
+                        $(idp).text((count - 1).toString());
+                        autoGetTotal();
+                        updatePrice(id, count);
+
+                    }
+                    },
+            error: function () {
+                alert("Lỗi Server");
+                $(idp).text((count - 1).toString());
+                autoGetTotal();
+                updatePrice(id, count);
+                }
+
+        });
+    }
+    function minus(id) {
+        if (parseInt($('#count-' + id).val()) <= 1) {
+            console.log("value:", parseInt($('#count-' + id).val()));
+            return;
+        }
+        else {
+            var idp = '#count-' + id;
+            var count = parseInt($(idp).val(), 10) - 1;
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("addToCart", "Product", new {Area="" })?id=' + id + '&count=' + count.toString(),
+                    async: false,
+                    dataType: "json",
+                    contentType: "application/json",
+                    jsonpCallback: 'callback',
+                    cache: false,
+                    success: function (json) {
+                        if (json.res == 1) {
+                            $(idp).val(count.toString())
+                            //alert("Giảm số lượng thành công");
+                            getCount();
+                            autoGetTotal();
+                            updatePrice(id, count);
+                            
+                        }
+                        else if (json.res == -1) {
+                            alert("Giảm số lượng thất bại");
+                            getCount();
+                            $(idp).text((count + 1).toString());
+                            autoGetTotal();
+                            updatePrice(id, count);
+                        }
+
+                        else if (json.res == 0) {
+                            alert("Bạn chưa đăng nhập");
+                            autoGetTotal();
+                        }
+                        else {
+                            alert("Lỗi hệ thống");
+                            $(idp).text((count + 1).toString());
+                            autoGetTotal();
+                            updatePrice(id, count);
+
+                        }
+                        },
+                error: function () {
+                    alert("Lỗi Server");
+                    $(idp).text((count + 1).toString());
+                    autoGetTotal();
+                    updatePrice(id, count);
+                    }
+
+            });
+        }
+
+    }
+    @*function deleteproduct(id)
+    {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("delete", "Cart", new {Area="" })?idp=' + id,
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                jsonpCallback: 'callback',
+                cache: false,
+                success: function (json) {
+                    if (json.res == true) {
+                        alert("Xóa thành công");
+                        document.location.reload;
+                    }
+                    else  {
+                        alert("Xóa thất bại công");
+                        getCount();
+                    }
+                    },
+            error: function () {
+                    alert("Lỗi Server");
+                }
+
+        });
+    }*@
+    function getCount() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("getCount", "Product", new {Area="" })',
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                jsonpCallback: 'callback',
+                cache: false,
+                success: function (json) {
+                    $('.number').text(json.count);
+                    },
+            error: function () {
+
+                $('.number').text(json.count);
+                }
+
+        });
+    }
+    function updateprice(count, price, idp) {
+        var sum = parseInt(count, 10) * parseInt(price, 10);
+        $(idp).text(sum);
+    }
+    $( document ).ready(function() {
+        autoGetTotal();
+    });
+    function autoGetTotal() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("getPriceCart", "Cart", new {Area="" })',
+                async: false,
+                dataType: "json",
+                contentType: "application/json",
+                jsonpCallback: 'callback',
+                cache: false,
+                success: function (json) {
+                    $('.total-price').text(json.res);
+                    },
+            error: function () {
+
+                $('.total-price').text(json.res);
+                }
+
+        });
+    }
+</script>
+
+

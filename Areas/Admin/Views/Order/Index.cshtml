@@ -1,0 +1,75 @@
+﻿@model IEnumerable<Anemone.Models.EF.order>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+@section header{
+    Danh sách đơn hàng}
+
+
+
+<table class="table">
+    <tr>
+        <th>
+            Mã đơn hàng
+        </th>
+        <th>
+            Tên khách hàng
+        </th>
+        <td> Địa chỉ</td>
+        <th>
+            @Html.DisplayNameFor(model => model.orderDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.status)
+        </th>
+
+        <th>Thao tác</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.idOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.user.userName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.user.address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.orderDate)
+            </td>
+            <td>
+                @if (item.status == true)
+                {
+                    <p>Sản phẩm đã được gửi đi</p>
+                }
+                else
+                {
+                    <p>Sản phẩm chưa được gửi đi</p>
+                }
+            </td>
+
+            <td>
+                @if (item.status == false)
+                {
+                    <a href="/Order/Update?id=@item.idOrder" onclick="return confirm('Bạn có chắc chắn muốn duyệt đơn hàng này?');">Duyệt đơn</a>
+                }
+                else
+                {
+                    <a href="/Order/Update?id=@item.idOrder" onclick="return confirm('Bạn có chắc chắn muốn duyệt đơn hàng này?');" hidden="hidden">Duyệt đơn</a>
+
+                }
+                @*<button class=""><a href="/Order/Update?id=@item.idOrder" onclick="return confirm('Bạn có chắc chắn muốn duyệt đơn hàng này?');">Xóa</a></button>*@
+                @* @Html.ActionLink("Duyệt gửi đơn hàng", "Edit", new { id = item.idOrder })*@ |
+                @Html.ActionLink("Details", "Details", new { id = item.idOrder }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.idOrder })
+            </td>
+        </tr>
+    }
+
+</table>

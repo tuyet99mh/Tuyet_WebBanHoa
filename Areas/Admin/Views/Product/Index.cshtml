@@ -1,0 +1,159 @@
+﻿@model PagedList.IPagedList<Anemone.Models.EF.product>
+@using PagedList.Mvc;
+@using Anemone.Models.DAO;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+
+    @* var pr = new ProductDAO();*@
+
+
+}
+
+@section header{
+    Danh sách sản phẩm}
+
+<p>
+    @Html.ActionLink("Thêm mới sản phẩm", "Create")
+</p>
+<div class="card shadow mb-4">
+    @if (TempData["AlertMessage"] != null)
+    {
+        <div id="AlertBox" class="alert  hide" role="alert">
+            @TempData["AlertMessage"]
+        </div>
+    }
+    @using (Html.BeginForm("Index", "Product", FormMethod.Post))
+    {
+
+        @Html.AntiForgeryToken()
+        <div class="card-body">
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+            <div class="table-responsive">
+
+                <table class="table">
+                    <tr>
+                        <th>Code</th>
+                        <th>
+                            Tên sản phẩm
+                        </th>
+                        @*<th>Loại sản phẩm</th>*@
+                        @*<th>Mô tả sản phẩm</th>*@
+                        <th>Ảnh</th>
+                        @*<th>Giá nhập</th>*@
+                        <th>Giá bán</th>
+                        @*<th>VAT</th>*@
+                        @*<th>metaTitle</th>*@
+                        <th>Số lượng</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.codePr)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.proName)
+                            </td>
+                            <!--<td>-->
+                            @*@{
+                                   pr.getCatNamebyID(@item.catID).ToString();
+                                }-->*@
+                            @* @Html.DisplayFor(modelItem => item.catID)*@
+                            <!--</td>-->
+                            <!--<td>-->
+                            @*@Html.Raw(@Html.DisplayFor(modelItem => item.description).ToString().Trim())*@
+                            @*@Html.DisplayFor(modelItem => item.description)*@
+                            <!--@*@Html.Raw(@item.description)*@
+
+                            </td>-->
+                            <td>
+                                <img src="~/assets/images/product/@item.image.Trim()" width="50" height="50" />
+                            </td>
+                            @* <td>
+                                    @Html.DisplayFor(modelItem => item.promotionPrice)
+                                </td>*@
+                            <td>
+                                @item.price.Value.ToString("N0")
+                            </td>
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.includedVAT)
+                                </td>*@
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.metaTitle)
+                                </td>*@
+                            <td>
+                                @Html.DisplayFor(modelItem => item.quantity)
+                            </td>
+
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.status)*@
+                                @(item.status.GetValueOrDefault(false)?"Active":"Block")
+                            </td>
+                            <td>
+                                @Html.ActionLink("Sửa", "Edit", new { id = item.proID }) |
+                                @Html.ActionLink("Chi tiết", "Details", new { id = item.proID }) |
+                                  @Ajax.ActionLink("Xoá", "delete", new { @id = item.proID }, new AjaxOptions
+                                    {
+                                        Confirm = "Bạn có muốn xoá bản ghi này?",
+                                        OnComplete = "$('#row_" + @item.proID + "').remove()",
+                                        HttpMethod = "delete"
+                                    })
+                               @* <a href="@Url.Action("XoaSanPham",new { SanPhamID = item.proID})" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');" class="">Xóa</a>*@
+                            </td>
+                        </tr>
+                    }
+
+                </table>
+                <div class="text-danger">
+                    @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+                </div>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+<script>
+    $(function () {
+        $('#AlertBox').removeClass('hide');
+        $('#AlertBox').delay(2000).slideUp(500);
+    });
+
+</script>
+
+
+<script>
+
+        function deleteproduct(id)
+        {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("delete", "Product", new {Area="" })?proID=' + id,
+                    async: false,
+                    dataType: "json",
+                    contentType: "application/json",
+                    jsonpCallback: 'callback',
+                    cache: false,
+                    success: function (json) {
+                        if (json.res == true) {
+                            alert("Xóa thành công");
+                            document.location.reload;
+                        }
+                        else  {
+                            alert("Xóa thất bại công");
+                            getCount();
+                        }
+                        },
+                error: function () {
+                        alert("Lỗi Server");
+                    }
+
+            });
+        }
+    </script>
